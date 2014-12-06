@@ -79,4 +79,4 @@ Dot.prototype = {
 
    swellUp();
   }
-}
+};

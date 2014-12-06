@@ -10,7 +10,8 @@ var maskCanvas = document.getElementById('mask'),
     fps = 60,
     originalDotColor = "#46b6ac",
 
-    dots = [];
+    dots = [],
+    maestro = null;
 
 init();
 
@@ -25,7 +26,30 @@ function init() {
   setTimeout(function() {
     moveDotsToMiddle();
   }, 1000);
+
+  leadMaestro();
 }
+
+
+function leadMaestro() {
+  // $(document).on('mouseMove')
+  document.addEventListener('mousemove', function(event) {
+    maestro.x = event.x;
+  })
+}
+
+function render() {
+  setTimeout(function() {
+    window.requestAnimationFrame(function() {
+
+      hideOriginalDots();
+      drawDots();
+      drawMaestro();
+
+      render();
+    });
+  }.bind(this), 1000 / fps);
+};
 
 
 function setupDots() {
@@ -49,17 +73,12 @@ function setupDots() {
   }
 }
 
-function render() {
-  setTimeout(function() {
-    window.requestAnimationFrame(function() {
 
-      hideOriginalDots();
-      drawDots();
+function setupMaestro() {
+  maestro = new Maestro(canvas.width / 2, (canvas.height / 2) - 40)
+  maestro.color = '#F3CC60';
+}
 
-      render();
-    });
-  }.bind(this), 1000 / fps);
-};
 
 
 function drawDots() {
@@ -83,11 +102,25 @@ function drawDots() {
   });
 }
 
+
+function drawMaestro() {
+  if (maestro) {
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = maestro.color;
+    ctx.beginPath();
+    ctx.arc(maestro.x, maestro.y, maestro.radius, 0, Math.PI * 2);
+    ctx.closePath();
+
+    ctx.fill();
+  }
+}
+
 function moveDotsToMiddle() {
   _.forEach(dots, function(dot) {
     var targetY = Math.round(canvas.height / 2);
     dot.moveToY(targetY, 300, function() {
       dot.swell();
+      setupMaestro();
     });
   });
 }
