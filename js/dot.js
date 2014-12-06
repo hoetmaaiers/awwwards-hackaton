@@ -11,7 +11,7 @@ var Dot = function(x, y) {
 }
 
 Dot.prototype = {
-  moveToY: function(targetY, time) {
+  moveToY: function(targetY, time, callback) {
     var distance = Math.abs(this.y - targetY),
         speed    = distance / 24;
 
@@ -28,7 +28,7 @@ Dot.prototype = {
           if (this.y == targetY) {
             // arrived at position
 
-            if (this.stackOrder == 0) { this.swell() }
+            if (this.stackOrder == 5) { callback() }
           } else {
             move.bind(this)(targetY);
           }
@@ -69,8 +69,8 @@ Dot.prototype = {
       window.requestAnimationFrame(function(){
         this.radius -= 0.5;
 
-        if (this.radius<= this.defaultRadius) {
-          this.radius = 2;
+        if (this.radius<= 5) {
+          this.radius = 5;
         } else {
           swellDown();
         }

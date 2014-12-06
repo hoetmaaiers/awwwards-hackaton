@@ -86,7 +86,9 @@ function drawDots() {
 function moveDotsToMiddle() {
   _.forEach(dots, function(dot) {
     var targetY = Math.round(canvas.height / 2);
-    dot.moveToY(targetY, 300);
+    dot.moveToY(targetY, 300, function() {
+      dot.swell();
+    });
   });
 }
 
