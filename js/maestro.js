@@ -1,11 +1,9 @@
-var Maestro = function(x, y) {
-  this.x = x;
-  this.y = y;
-  console.log(this.y);
+var Maestro = function() {
+  this.x = 0;
+  this.y = 0;
+
   this.radius = 10;
   this.color = "white";
 }
 
-Maestro.prototype = {
-
-};
+Maestro.prototype = {};
