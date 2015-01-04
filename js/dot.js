@@ -1,12 +1,14 @@
 var Dot = function(x, y) {
   this.x = x;
   this.y = y;
+  this.offset = 0;
+
   this.stackOrder = 0;
   this.visible = true;
 
   this.defaultRadius = 5;
   this.radius = this.defaultRadius;
-  // this.color = "white";
+
   this.opacity = 1;
 
   this.speed = 6;
@@ -47,7 +49,28 @@ var Dot = function(x, y) {
   ]
 }
 
+
 Dot.prototype = {
+
+  move: function(coords) {
+    this.x = coords.x;
+    this.y = coords.y + (this.head * 60) + (this.row * this.offset);
+    // console.log(this.y)
+  },
+
+  follow: function(maestro) {
+    var distance = lineDistance(maestro, this.tracker);
+    var range = 100;
+
+    if (distance < range){
+      this.head = (distance - range) / -range;
+      this.offset = (this.head * 15);
+    } else {
+      this.head = 0;
+      this.offset = 0;
+    }
+  },
+
   color: function() {
     // console.log(this.stackOrder);
     return this.colors[this.stackOrder];
@@ -92,3 +115,17 @@ Dot.prototype = {
    swellUp();
   }
 };
+
+
+function lineDistance(point1, point2) {
+  var xs = 0;
+  var ys = 0;
+
+  xs = point2.x - point1.x;
+  xs = xs * xs;
+
+  ys = point2.y - point1.y;
+  ys = ys * ys;
+
+  return Math.sqrt( xs + ys );
+}

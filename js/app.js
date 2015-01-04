@@ -15,8 +15,11 @@ var maskCanvas = document.getElementById('mask'),
     originalDotColor = "#46b6ac",
 
     dots = [],
+    columnSize,
+    columnSpacing = 30,
     visibleDots = [],
-    maestro = null;
+    maestro = null,
+    dirigentRelative;
 
 
 
@@ -25,15 +28,18 @@ function init() {
   $(window).on('resize', setupCanvasSize);
 
   setupDots();
+  dirigentRelative = { value: -1 };
 
+  manualMaestro = false;
 
   setTimeout(function() {
     moveDotsToMiddle();
-  }.bind(this), 1000);
+  }.bind(this), 0);
 
   setTimeout(function() {
     setupMaestro();
-  }.bind(this), 2500);
+  }.bind(this), 0);
+
 
   render();
 }
@@ -47,7 +53,7 @@ function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       hideOriginalDots();
-      updateDots();
+      updateObjects();
 
       drawDots();
       drawMaestro();
@@ -79,6 +85,7 @@ function setupDots() {
     var dot = new Dot(xPosition, yPosition + (ySpacing * row));
     dot.stackOrder = row;
     dot.column = column;
+    dot.row = row;
     dot.radius = 1;
     dots.push(dot);
   }
@@ -98,64 +105,88 @@ function setupMaestro() {
   maestro = new Maestro();
   maestro.x = canvas.width / 2;
   maestro.y = (canvas.height / 2) - 40
-  maestro.radius = 1;
+  maestro.radius = 15;
   maestro.color = '#F3CC60';
 
   leadMaestro();
-  enterMaestro();
+  // enterMaestro();
 }
 
 function leadMaestro() {
-  document.addEventListener('mousemove', function(event) {
-    maestro.x = event.x;
-  });
+  if (manualMaestro) {
+
+    document.addEventListener('mousemove', function(event) {
+      console.log(event.x)
+      // maestro.value = event.x;
+      dirigentRelative = { value: event.x };
+    });
+  } else {
+    autoLeadMaestro();
+  }
+}
+
+function autoLeadMaestro(direction) {
+  dirigentRelative = { value: dirigentRelative.value };
+
+  var rand = Math.random();
+  var distance = Math.abs(dirigentRelative.value - rand);
+  
+  if (distance < 0.4){
+    distance = 0.4;
+  }
+
+  if (direction === "left") {
+    rand *= -1;
+    nextDirection = "right";
+  } else {
+    nextDirection = "left";
+  }
+
+  $(dirigentRelative).animate(
+    {
+      value: rand
+    },
+    {
+      duration: 1000 * distance,
+      easing: 'easeInOutBack',
+      complete: function(){
+        autoLeadMaestro(nextDirection);
+      }
+    }
+  );
 }
 
 function enterMaestro() {
   maestroTarget = (canvas.height / 2) - 40;
 
   if (maestro) {
-    $(maestro).animate({ radius: 20 }, 300, 'easeOutBounce');
+    $(maestro).animate({ radius: 15 }, 300, 'easeOutBounce');
   }
 }
 
 
+function updateObjects() {
 
-function horDistance(p1,p2) {
-  return Math.abs(p2.x - p1.x);
-}
+  var lineWidth = columnSize * columnSpacing;
+  var lineX = (canvas.width / 2) - (lineWidth / 2);
+  var lineY = canvas.height / 2;
 
-function lineDistance( p1, p2 ) {
-  var dx = p2.x - p1.x;
-  var dy = p2.y - p1.y;
-  var distance = Math.sqrt(dx*dx + dy*dy);
+  _.forEach(dots, function(dot) {
+    dot.tracker = {
+      x: lineX + (dot.column * columnSpacing),
+      y: lineY
+    }
 
-  return distance
-}
-
-function updateDots() {
+    dot.move(dot.tracker);
+    dot.follow(maestro);
+  });
 
   if (maestro) {
-
-    _.forEach(dots, function(dot) {
-      distance = lineDistance(maestro, dot);
-      horizontalDistance = horDistance(maestro, dot);
-
-      var maxDistance = 200;
-
-      if (horizontalDistance < maxDistance) {
-        targetY = (canvas.height / 2) + ((maxDistance - horizontalDistance) / 8);
-        targetY -= (dot.stackOrder + 1) * ((horizontalDistance / maxDistance) - 1);
-
-        // apply stackorder
-        $(dot).animate({ y: targetY }, {duration: 50}, 'easeInElastic');
-        dot.y = targetY;
-
-      } else {
-        dot.y = (canvas.height / 2);
-        dot.visualY = dot.y;
-      }
-    });
+    if (manualMaestro) {
+      maestro.x = dirigentRelative.value;
+    }
+    maestro.x = lineX + (lineWidth / 2) + ((lineWidth / 2) * dirigentRelative.value);
+    maestro.y = window.innerHeight / 2 - 50;
   }
 }
 
@@ -182,7 +213,7 @@ function drawMaestro() {
     ctx.globalAlpha = 1;
     ctx.fillStyle = maestro.color;
     ctx.beginPath();
-    ctx.arc(maestro.x, maestro.y, maestro.radius, 0, Math.PI * 2);
+    ctx.arc(maestro.x, maestro.y, maestro.radius, 0, 2 * Math.PI, false);
     ctx.closePath();
 
     ctx.fill();
@@ -202,7 +233,6 @@ function moveDotsToMiddle() {
   });
 
   setTimeout(function() {
-    columnSpacing = 30;
     _.forEach(visibleDots, function(dot) {
       dot.x = (canvas.width / 2 - ((columnSize * columnSpacing) / 2)) + (columnSpacing * dot.column);
     });
