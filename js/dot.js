@@ -2,6 +2,7 @@ var Dot = function(x, y) {
   this.x = x;
   this.y = y;
   this.offset = 0;
+  this.head = 0;
 
   this.stackOrder = 0;
   this.visible = true;
@@ -55,7 +56,16 @@ Dot.prototype = {
   move: function(coords) {
     this.x = coords.x;
     this.y = coords.y + (this.head * 60) + (this.row * this.offset);
-    // console.log(this.y)
+  },
+
+  animatedMove: function(coords) {
+    var x = coords.x;
+    var y = coords.y + (this.head * 60) + (this.row * this.offset);
+
+    $(this).animate({
+      x: x,
+      y: y
+    }, 1000);
   },
 
   follow: function(maestro) {
@@ -72,10 +82,9 @@ Dot.prototype = {
   },
 
   color: function() {
-    // console.log(this.stackOrder);
     return this.colors[this.stackOrder];
-    // return '#'+Math.floor(Math.random()*16777215).toString(16);
   },
+
   moveTo: function(targetX, targetY, time, callback) {
     $(this).animate({
       x: targetX,
@@ -128,4 +137,8 @@ function lineDistance(point1, point2) {
   ys = ys * ys;
 
   return Math.sqrt( xs + ys );
+}
+
+function randomColor() {
+  return '#'+Math.floor(Math.random()*16777215).toString(16);
 }
