@@ -57,23 +57,30 @@ Dot.prototype = {
         this.farthestOffset = this.offset;
       }
     } else if (this.bounceOut) {
+      this.head = 0;
+      this.offset = -this.farthestOffset * 0.8;
 
-      $(this).animate({
-        head: 0,
-        offset: -this.farthestOffset / 2
-      }, {
-        duration: 100,
-        complete: function() {
-          $(this).animate({
-            head: 0,
-            offset: 0
-          }, 100);
-        }
-      });
+      var bouncingOut = function() {
+        setTimeout(function() {
+          window.requestAnimationFrame(function(){
 
-      // reset bounce out variables
-      this.bounceOut = false;
-      this.farthestOffset = 0;
+            // this.head = 0;
+            this.offset += 0.5;
+
+            if (this.offset >= 0) {
+              this.offset = 0;
+
+              // reset bounce out variables
+              this.bounceOut = false;
+              this.farthestOffset = 0;
+            } else {
+              bouncingOut(false);
+            }
+          }.bind(this));
+        }.bind(this), 1000 / 60);
+      }.bind(this);
+
+      bouncingOut();
 
     } else {
       this.head = 0;
