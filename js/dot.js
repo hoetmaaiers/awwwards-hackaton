@@ -2,6 +2,7 @@ var Dot = function(x, y) {
   this.x = x;
   this.y = y;
   this.offset = 0;
+  this.farthestOffset = 0;
   this.head = 0;
 
   this.stackOrder = 0;
@@ -49,7 +50,31 @@ Dot.prototype = {
 
     if (distance < range){
       this.head = (distance - range) / -range;
-      this.offset = (this.head * 10);
+      this.offset = (this.head * 9);
+      this.bounceOut = true;
+
+      if (this.offset > this.farthestOffset) {
+        this.farthestOffset = this.offset;
+      }
+    } else if (this.bounceOut) {
+
+      $(this).animate({
+        head: 0,
+        offset: -this.farthestOffset / 2
+      }, {
+        duration: 100,
+        complete: function() {
+          $(this).animate({
+            head: 0,
+            offset: 0
+          }, 100);
+        }
+      });
+
+      // reset bounce out variables
+      this.bounceOut = false;
+      this.farthestOffset = 0;
+
     } else {
       this.head = 0;
       this.offset = 0;
