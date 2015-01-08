@@ -15,38 +15,13 @@ var Dot = function(x, y) {
   this.speed = 6;
 
   this.colors = [
-    "#46B6AE",
-    "#A4E8E3",
-    "#6ED0C9",
-    "#289C94",
-    "#0B9086",
-
-    "#5679C0",
-    "#ADC2EC",
-    "#7B9AD7",
-    "#385EA9",
-    "#1A469C",
-
-    "#62DD55",
-    "#B3F4AC",
-    "#86E97B",
-    "#44D036",
-    "#1FC00E"
-
-    // "lightyellow",
-    // "red",
-    // "orange",
-    // "yellow",
-    // "lightgreen",
-    // "green",
-    // "coral",
-    // "pink",
-    // "tomato"
-
-    // "#0DFF60",
-    // "0CE896",
-    // "0CC0E8",
-    // "0D94FF",
+    "#fdee2f",
+    "#f4d75a",
+    "#fdc78e",
+    "#f5a8a9",
+    "#fc8ccb",
+    "#fb5ee1",
+    "#fc08f3"
   ]
 }
 
@@ -74,7 +49,7 @@ Dot.prototype = {
 
     if (distance < range){
       this.head = (distance - range) / -range;
-      this.offset = (this.head * 15);
+      this.offset = (this.head * 10);
     } else {
       this.head = 0;
       this.offset = 0;

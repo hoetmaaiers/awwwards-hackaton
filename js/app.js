@@ -68,7 +68,7 @@ function activateVisualDots() {
   visibleDots = [];
 
   _.forEach(dots, function(dot) {
-    if (dot.stackOrder < 9) {
+    if (dot.stackOrder < 7) {
       visibleDots.push(dot);
     }
   });
@@ -141,7 +141,7 @@ function setupMaestro() {
   maestro.x = -100;//canvas.width / 2;
   maestro.y = (canvas.height / 2) - 40;
   maestro.radius = 15;
-  maestro.color = '#F3CC60';
+  maestro.color = '#fdee2f';
 
   dirigentRelative = { value: -1.2 };
 
@@ -292,8 +292,8 @@ function moveDotsToMiddle(complete) {
 
 
 function hideOriginalDots() {
-  maskContext.fillStyle = originalDotColor;
-  maskContext.globalAlpha =   0.025;
+  maskContext.fillStyle = "#602175";//originalDotColor;
+  maskContext.globalAlpha =  0.15;
   maskContext.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
 }
 
