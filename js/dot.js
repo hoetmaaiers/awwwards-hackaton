@@ -2,7 +2,7 @@ var Dot = function(x, y) {
   this.x = x;
   this.y = y;
   this.offset = 0;
-  this.farthestOffset = 0;
+  this.maxOffset = 0;
   this.head = 0;
 
   this.stackOrder = 0;
@@ -50,12 +50,12 @@ Dot.prototype = {
       this.offset = (this.head * 9);
       this.bounceOut = true;
 
-      if (this.offset > this.farthestOffset) {
-        this.farthestOffset = this.offset;
+      if (this.offset > this.maxOffset) {
+        this.maxOffset = this.offset;
       }
     } else if (this.bounceOut) {
       this.head = 0;
-      this.offset = -this.farthestOffset * 0.8;
+      this.offset = -this.maxOffset * 0.8;
 
       var bouncingOut = function() {
         setTimeout(function() {
@@ -69,7 +69,7 @@ Dot.prototype = {
 
               // reset bounce out variables
               this.bounceOut = false;
-              this.farthestOffset = 0;
+              this.maxOffset = 0;
             } else {
               bouncingOut(false);
             }
