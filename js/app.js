@@ -15,7 +15,8 @@ var maskCanvas = document.getElementById('mask'),
     originalDotColor = "#46b6ac",
 
     dots = [],
-    columnSize,
+    visualColumnSize,
+    maxColumnSize = 25,
     columnSpacing = 30,
     visibleDots = [],
     maestro = null,
@@ -68,7 +69,7 @@ function activateVisualDots() {
   visibleDots = [];
 
   _.forEach(dots, function(dot) {
-    if (dot.stackOrder < 7) {
+    if (dot.stackOrder < 7 && dot.column < maxColumnSize) {
       visibleDots.push(dot);
     }
   });
@@ -127,14 +128,19 @@ function setupDots() {
   }).uniq().value().length;
 
   // define column size
-  columnSize = _.chain(dots).map(function(dot) {
+  visualColumnSize = _.chain(dots).map(function(dot) {
     return dot.column;
   }).uniq().value().length;
 
-  lineWidth = columnSize * columnSpacing;
+  if (visualColumnSize > maxColumnSize) {
+    visualColumnSize = maxColumnSize;
+  }
+
+  lineWidth = visualColumnSize * columnSpacing;
   lineX = (canvas.width / 2) - (lineWidth / 2);
   lineY = canvas.height / 2;
 }
+
 
 function setupMaestro() {
   maestro = new Maestro();
@@ -143,7 +149,7 @@ function setupMaestro() {
   maestro.radius = 15;
   maestro.color = '#fdee2f';
 
-  dirigentRelative = { value: -1.2 };
+  dirigentRelative = { value: -2 };
 
   $(dirigentRelative).animate({
     value: 0
@@ -159,6 +165,7 @@ function setupMaestro() {
   // leadMaestro();
 }
 
+
 function leadMaestro() {
   if (manualMaestro) {
     document.addEventListener('mousemove', function(event) {
@@ -169,6 +176,7 @@ function leadMaestro() {
     autoLeadMaestro();
   }
 }
+
 
 function autoLeadMaestro(direction) {
   dirigentRelative = { value: dirigentRelative.value };
@@ -201,20 +209,8 @@ function autoLeadMaestro(direction) {
   );
 }
 
-// function enterMaestro() {
-//   maestroTarget = (canvas.height / 2) - 40;
-
-//   if (maestro) {
-//     $(maestro).animate({ radius: 15 }, 300, 'easeOutBounce');
-//   }
-// }
-
 
 function updateObjects() {
-
-  lineWidth = columnSize * columnSpacing;
-  lineX = (canvas.width / 2) - (lineWidth / 2);
-  lineY = canvas.height / 2;
 
   _.forEach(dots, function(dot) {
     dot.tracker = {
@@ -237,6 +233,7 @@ function updateObjects() {
   }
 }
 
+
 function drawDots() {
   // Trail
   // ctx.globalAlpha = 0.66;
@@ -255,6 +252,7 @@ function drawDots() {
   });
 }
 
+
 function drawMaestro() {
   if (maestro) {
     ctx.globalAlpha = 1;
@@ -266,6 +264,7 @@ function drawMaestro() {
     ctx.fill();
   }
 }
+
 
 function moveDotsToMiddle(complete) {
   var targetX = Math.round(canvas.width / 2);

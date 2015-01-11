@@ -35,12 +35,9 @@ Dot.prototype = {
   },
 
   animatedMove: function(coords) {
-    var x = coords.x;
-    var y = coords.y + (this.head * 60) + (this.row * this.offset);
-
     $(this).animate({
-      x: x,
-      y: y
+      x: coords.x,
+      y: coords.y + (this.head * 60) + (this.row * this.offset)
     }, 1000);
   },
 
